@@ -1,0 +1,45 @@
+.app-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.visits-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.visits-table th, 
+.visits-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.visits-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Score colors */
+.score-90 { color: green; font-weight: bold; }
+.score-80 { color: orange; font-weight: bold; }
+.score-70 { color: red; font-weight: bold; }
+
+/* Badge styles */
+.visit-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.first-time {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.follow-up {
+  background-color: #f6ffed;
+  color: #52c41a;
+}

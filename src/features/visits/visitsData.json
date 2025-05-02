@@ -1,0 +1,30 @@
+[
+    {
+      "clientName": "Alice Johnson",
+      "mobileNo": "555-1234",
+      "schedule": "2025-05-02T10:00:00",
+      "carModel": "Toyota Camry",
+      "scorePercent": "92"
+    },
+    {
+      "clientName": "Bob Smith",
+      "mobileNo": "555-5678",
+      "schedule": "2025-05-02T10:30:00",
+      "carModel": "Honda Civic",
+      "scorePercent": "88"
+    },
+    {
+      "clientName": "Alice Johnson",
+      "mobileNo": "555-1234",
+      "schedule": "2025-05-02T14:00:00",
+      "carModel": "Toyota Camry",
+      "scorePercent": "85"
+    },
+    {
+      "clientName": "John Doe",
+      "mobileNo": "555-9999",
+      "schedule": "2025-05-03T09:00:00",
+      "carModel": "Ford Focus",
+      "scorePercent": "90"
+    }
+  ]

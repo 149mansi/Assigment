@@ -1,0 +1,79 @@
+/* Add this to your App.css */
+.table-container {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.visits-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.visits-table th {
+  background-color: #f8f9fa;
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.visits-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+}
+
+.visits-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Column-specific spacing */
+.visits-table td:nth-child(1), /* Client Name */
+.visits-table th:nth-child(1) {
+  padding-left: 20px;
+  width: 20%;
+}
+
+.visits-table td:nth-child(2), /* Mobile No */
+.visits-table th:nth-child(2) {
+  width: 15%;
+}
+
+.visits-table td:nth-child(3), /* Schedule */
+.visits-table th:nth-child(3) {
+  width: 25%;
+}
+
+.visits-table td:nth-child(4), /* Car Model */
+.visits-table th:nth-child(4) {
+  width: 20%;
+}
+
+.visits-table td:nth-child(5), /* Score Percent */
+.visits-table th:nth-child(5) {
+  width: 10%;
+  text-align: right;
+  padding-right: 20px;
+}
+
+/* Score percentage colors */
+.score-high {
+  color: #28a745; /* Green for high scores */
+  font-weight: 600;
+}
+
+.score-medium {
+  color: #ffc107; /* Yellow for medium scores */
+  font-weight: 600;
+}
+
+.score-low {
+  color: #dc3545; /* Red for low scores */
+  font-weight: 600;
+}
