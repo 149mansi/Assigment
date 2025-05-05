@@ -1,52 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Client Schedule</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store Visits Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .visits-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .visits-table th,
+    .visits-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .visits-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    /* Badge styles */
+    .visit-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .first-time {
+      background-color: #e6f7ff;
+      color: #1890ff;
+      border: 1px solid #1890ff;
+    }
+
+    .follow-up {
+      background-color: #f6ffed;
+      color: #52c41a;
+      border: 1px solid #52c41a;
+    }
+
+    /* Form styling (for future implementation) */
+    .add-visit-form {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-  <table class="styled-table">
+  <h1>Store Visits Dashboard</h1>
+  <h3>Today's Visits (2025-05-02)</h3>
+
+  <!-- Visits Table -->
+  <table class="visits-table">
     <thead>
       <tr>
-        <th>Client Name</th>
-        <th>Mobile No</th>
-        <th>Schedule</th>
-        <th>Car Model</th>
-        <th>Score Percent</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Time</th>
+        <th>Vehicle</th>
+        <th>Customer Score</th>
+        <th>Visit Type</th>
       </tr>
     </thead>
     <tbody>
+      <!-- Alice's First Visit -->
       <tr>
         <td>Alice Johnson</td>
         <td>555-1234</td>
-        <td>2025-05-02T10:00:00</td>
+        <td>10:00</td>
         <td>Toyota Camry</td>
-        <td>92%</td>
+        <td>92</td>
+        <td><span class="visit-badge first-time">First Time</span></td>
       </tr>
+      
+      <!-- Bob's Visit -->
       <tr>
         <td>Bob Smith</td>
         <td>555-5678</td>
-        <td>2025-05-02T10:30:00</td>
+        <td>10:30</td>
         <td>Honda Civic</td>
-        <td>88%</td>
+        <td>88</td>
+        <td><span class="visit-badge first-time">First Time</span></td>
       </tr>
+      
+      <!-- Alice's Follow-up Visit -->
       <tr>
         <td>Alice Johnson</td>
         <td>555-1234</td>
-        <td>2025-05-02T14:00:00</td>
+        <td>14:00</td>
         <td>Toyota Camry</td>
-        <td>85%</td>
-      </tr>
-      <tr>
-        <td>John Doe</td>
-        <td>555-9999</td>
-        <td>2025-05-03T09:00:00</td>
-        <td>Ford Focus</td>
-        <td>90%</td>
+        <td>85</td>
+        <td><span class="visit-badge follow-up">Follow Up</span></td>
       </tr>
     </tbody>
   </table>
+
+  <!-- Add Visit Form (Placeholder) -->
+  <div class="add-visit-form">
+    <h3>Add New Visit</h3>
+    <!-- Form would go here with validation -->
+    <p><em>(Form implementation would go here with phone/time validation)</em></p>
+  </div>
 </body>
 </html>

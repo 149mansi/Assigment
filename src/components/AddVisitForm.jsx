@@ -48,7 +48,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addVisit, selectAllVisits } from '../features/visits/visitsSlice';
-import { format, parseISO, addHours } from 'date-fns';
+import { parseISO, addHours, isWithinInterval } from 'date-fns';
 
 const AddVisitForm = () => {
   const dispatch = useDispatch();
@@ -65,51 +65,86 @@ const AddVisitForm = () => {
   const [errors, setErrors] = useState({
     mobileNo: '',
     schedule: '',
+    form: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = { mobileNo: '', schedule: '' };
+  // Validate phone uniqueness (all visits, not just today's)
+  const validatePhone = (phone) => {
+    return !allVisits.some(visit => visit.mobileNo === phone);
+  };
 
-    // Check for duplicate phone
-    const phoneExists = allVisits.some(visit => visit.mobileNo === formData.mobileNo);
-    if (phoneExists) {
-      newErrors.mobileNo = 'This phone number already exists';
-      isValid = false;
-    }
-
-    // Check for overlapping time
-    if (formData.schedule) {
-      const newVisitStart = parseISO(formData.schedule);
-      const newVisitEnd = addHours(newVisitStart, 1);
-      
-      const hasOverlap = allVisits.some(visit => {
-        const visitStart = new Date(visit.schedule);
-        const visitEnd = addHours(visitStart, 1);
-        
-        return newVisitStart < visitEnd && newVisitEnd > visitStart;
-      });
-
-      if (hasOverlap) {
-        newErrors.schedule = 'This time overlaps with an existing visit';
-        isValid = false;
-      }
-    }
-
-    setErrors(newErrors);
-    return isValid;
+  // Validate time slot availability (1-hour appointments)
+  const validateTime = (time) => {
+    if (!time) return true;
+    
+    const newStart = parseISO(time);
+    const newEnd = addHours(newStart, 1);
+    
+    return !allVisits.some(visit => {
+      const visitStart = parseISO(visit.schedule);
+      const visitEnd = addHours(visitStart, 1);
+      return isWithinInterval(newStart, { start: visitStart, end: visitEnd }) ||
+             isWithinInterval(newEnd, { start: visitStart, end: visitEnd });
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      dispatch(addVisit(formData));
+    // Validate all fields
+    let isValid = true;
+    const newErrors = { mobileNo: '', schedule: '', form: '' };
+
+    if (!formData.clientName) {
+      newErrors.form = 'Name is required';
+      isValid = false;
+    }
+
+    if (!formData.mobileNo) {
+      newErrors.mobileNo = 'Phone is required';
+      isValid = false;
+    } else if (!validatePhone(formData.mobileNo)) {
+      newErrors.mobileNo = 'Phone number already exists';
+      isValid = false;
+    }
+
+    if (!formData.schedule) {
+      newErrors.schedule = 'Time is required';
+      isValid = false;
+    } else if (!validateTime(formData.schedule)) {
+      newErrors.schedule = 'Time overlaps with existing visit';
+      isValid = false;
+    }
+
+    if (!formData.carModel) {
+      newErrors.form = 'Vehicle is required';
+      isValid = false;
+    }
+
+    if (!formData.scorePercent) {
+      newErrors.form = 'Score is required';
+      isValid = false;
+    } else if (formData.scorePercent < 0 || formData.scorePercent > 100) {
+      newErrors.form = 'Score must be between 0-100';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    
+    if (isValid) {
+      dispatch(addVisit({
+        ...formData,
+        // Store score without % symbol
+        scorePercent: formData.scorePercent.toString().replace('%', '')
+      }));
+      // Reset form
       setFormData({
         clientName: '',
         mobileNo: '',
@@ -117,66 +152,98 @@ const AddVisitForm = () => {
         carModel: '',
         scorePercent: '',
       });
+      setErrors({ mobileNo: '', schedule: '', form: '' });
     }
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6">
-      <h2 className="text-lg font-medium mb-4">Add New Visit</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="bg-white p-6 rounded-lg shadow mb-8">
+      <h2 className="text-xl font-semibold mb-4">Add New Visit</h2>
+      
+      {errors.form && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {errors.form}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Name Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Name *
+            </label>
             <input
               type="text"
               name="clientName"
               value={formData.clientName}
               onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Customer name"
             />
           </div>
-          
+
+          {/* Phone Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone *
+            </label>
             <input
               type="tel"
               name="mobileNo"
               value={formData.mobileNo}
               onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none ${
+                errors.mobileNo ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 
+                'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              }`}
+              placeholder="555-1234"
             />
-            {errors.mobileNo && <p className="mt-1 text-sm text-red-600">{errors.mobileNo}</p>}
+            {errors.mobileNo && (
+              <p className="mt-1 text-sm text-red-600">{errors.mobileNo}</p>
+            )}
           </div>
-          
+
+          {/* Time Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Time</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Time *
+            </label>
             <input
               type="datetime-local"
               name="schedule"
               value={formData.schedule}
               onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none ${
+                errors.schedule ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 
+                'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+              }`}
             />
-            {errors.schedule && <p className="mt-1 text-sm text-red-600">{errors.schedule}</p>}
+            {errors.schedule && (
+              <p className="mt-1 text-sm text-red-600">{errors.schedule}</p>
+            )}
           </div>
-          
+
+          {/* Vehicle Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Vehicle</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Vehicle *
+            </label>
             <input
               type="text"
               name="carModel"
               value={formData.carModel}
               onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Toyota Camry"
             />
           </div>
-          
+
+          {/* Score Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Score (%)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Score (0-100) *
+            </label>
             <input
               type="number"
               name="scorePercent"
@@ -184,16 +251,16 @@ const AddVisitForm = () => {
               onChange={handleChange}
               min="0"
               max="100"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="85"
             />
           </div>
         </div>
-        
-        <div className="mt-4">
+
+        <div className="pt-4">
           <button
             type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Add Visit
           </button>
