@@ -13,5 +13,6 @@ export default function VisitTypeBadge({ clientId, mobileNo, visits }) {
       <span className={`visit-badge ${isFirstVisit ? 'first-time' : 'follow-up'}`}>
         {isFirstVisit ? 'First Time' : 'Follow Up'}
       </span>
+      
     );
   }

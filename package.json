@@ -1,4 +1,5 @@
 {
+  "homepage": "https://149mansi.github.io/Assigment",
   "name": "vite-project",
   "private": true,
   "version": "0.0.0",
@@ -7,7 +8,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+   "deploy": "gh-pages -d build"
+
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.7.0",
